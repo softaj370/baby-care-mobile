@@ -1,7 +1,7 @@
 import 'package:baby_care/core/utils/app_color.dart';
 import 'package:baby_care/core/widgets/image_button.dart';
 import 'package:baby_care/core/widgets/page_layout_widget.dart';
-import 'package:baby_care/features/auth/logged_in_page.dart';
+import 'package:baby_care/features/auth/presentation/pages/logged_in_page.dart';
 import 'package:flutter/material.dart';
 
 class LoginPage extends StatefulWidget {

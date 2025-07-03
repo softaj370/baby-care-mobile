@@ -1,8 +1,11 @@
+import 'package:baby_care/core/services/local_storage_service.dart';
 import 'package:baby_care/core/utils/app_color.dart';
 import 'package:baby_care/core/widgets/custom_button.dart';
+import 'package:baby_care/core/widgets/custom_calendar.dart';
 import 'package:baby_care/core/widgets/page_layout_widget.dart';
 import 'package:baby_care/screens/date_confirmation_page.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class DatePickerPage extends StatefulWidget {
   const DatePickerPage({super.key});
@@ -13,8 +16,22 @@ class DatePickerPage extends StatefulWidget {
 
 class _DatePickerPageState extends State<DatePickerPage> {
   String title = "";
-  DateTime date = DateTime.now();
-  final TextEditingController _dateField = TextEditingController();
+  DateTime _selectedDate = DateTime.now();
+  DateTime _focusedDay = DateTime.now();
+  final TextEditingController _dateField = TextEditingController()
+    ..text = DateFormat('yyyy-MM-dd').format(DateTime.now());
+
+  void _inputFieldChange(String value) {
+    DateFormat formatter = DateFormat('yyyy-MM-dd');
+    DateTime date = formatter.parse(value);
+    setState(() {
+      _selectedDate = date;
+    });
+  }
+
+  Future<void> _saveSelectedDate() async {
+    LocalStorageService.instance.saveSelectedDate(_selectedDate);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,11 +46,12 @@ class _DatePickerPageState extends State<DatePickerPage> {
             child: CustomButton(
               text: "Next",
               onPressed: () {
+                _saveSelectedDate();
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) =>
-                        DateConfirmationPage(title: title, date: date),
+                        DateConfirmationPage(title: title, date: _selectedDate),
                   ),
                 );
               },
@@ -41,7 +59,7 @@ class _DatePickerPageState extends State<DatePickerPage> {
           ),
           children: Container(
             width: double.maxFinite,
-            padding: EdgeInsets.symmetric(horizontal: 24,vertical: 64),
+            padding: EdgeInsets.symmetric(horizontal: 24, vertical: 64),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               spacing: 16,
@@ -81,6 +99,9 @@ class _DatePickerPageState extends State<DatePickerPage> {
                 ),
                 TextField(
                   controller: _dateField,
+                  onChanged: (value) {
+                    _inputFieldChange(value);
+                  },
                   decoration: InputDecoration(
                     hintText: 'Enter date ( Example:  2023-10-18)',
                     labelStyle: TextStyle(color: Colors.red),
@@ -109,17 +130,32 @@ class _DatePickerPageState extends State<DatePickerPage> {
                     ),
                   ),
                 ),
-                Column(
-                  children: [
-                    Text("Month name"),
-                    Text(
-                      "Calendar view",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
+                Container(
+                  width: 300,
+                  padding: EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.all(Radius.circular(8)),
+                    boxShadow: List.filled(
+                      1,
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 19,
+                        spreadRadius: 0,
+                        offset: Offset(2, 16),
                       ),
                     ),
-                  ],
+                  ),
+                  child: CustomCalendar(
+                    onDateSelected: (selectedDay, focusedDay) {
+                      setState(() {
+                        _selectedDate = selectedDay;
+                      });
+                      _dateField.text = DateFormat(
+                        'yyyy-MM-dd',
+                      ).format(selectedDay);
+                    },
+                  ),
                 ),
               ],
             ),

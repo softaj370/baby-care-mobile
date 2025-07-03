@@ -1,5 +1,7 @@
+import 'package:baby_care/core/services/session_storage_service.dart';
 import 'package:baby_care/core/utils/app_color.dart';
 import 'package:baby_care/core/widgets/daily_info_card.dart';
+import 'package:baby_care/screens/splash_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -59,6 +61,16 @@ class _ProfilePageState extends State<ProfilePage> {
                   detail: "Upload Image to start",
                 ),
               ),
+            ),
+            InkWell(
+              onTap: () {
+                SessionStorageService.instance.clearSession();
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => SplashScreen()),
+                );
+              },
+              child: Text("Log Out"),
             ),
           ],
         ),

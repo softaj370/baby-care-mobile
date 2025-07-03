@@ -1,4 +1,7 @@
 import 'package:baby_care/core/utils/app_color.dart';
+import 'package:baby_care/core/widgets/most_popular_card.dart';
+import 'package:baby_care/core/widgets/reproductive_card.dart';
+import 'package:baby_care/core/widgets/top_pick_card.dart';
 import 'package:flutter/material.dart';
 
 class InsightPage extends StatefulWidget {
@@ -15,7 +18,7 @@ class _InsightPageState extends State<InsightPage> {
       child: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: 16),
         child: Column(
-          spacing: 16,
+          spacing: 24,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
@@ -24,77 +27,85 @@ class _InsightPageState extends State<InsightPage> {
               decoration: BoxDecoration(border: Border.all(width: 1)),
               child: Text("Tag List Container"),
             ),
-            Container(
+            SizedBox(
               width: double.maxFinite,
-              decoration: BoxDecoration(border: Border.all(width: 1)),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: 4,
+                spacing: 12,
                 children: [
                   Text(
                     "Most Popular",
                     style: TextStyle(
-                      fontSize: 20,
+                      fontSize: 24,
                       color: AppColors.textColor,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                  Container(
+                  SizedBox(
                     height: 250,
-                    decoration: BoxDecoration(
-                      border: Border.all(width: 1, color: Colors.red),
+                    child: ListView.separated(
+                      separatorBuilder: (context, index) => SizedBox(width: 16),
+                      scrollDirection: Axis.horizontal,
+                      itemCount: 5,
+                      itemBuilder: (context, index) {
+                        return MostPopularCard();
+                      },
                     ),
-                    child: Text("Most Popular Card list horizontal"),
                   ),
                 ],
               ),
             ),
-            Container(
+            SizedBox(
               width: double.maxFinite,
-              decoration: BoxDecoration(border: Border.all(width: 1)),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: 4,
+                spacing: 12,
                 children: [
                   Text(
                     "Reproductive Health 101",
                     style: TextStyle(
-                      fontSize: 20,
+                      fontSize: 24,
                       color: AppColors.textColor,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                  Container(
-                    height: 150,
-                    decoration: BoxDecoration(
-                      border: Border.all(width: 1, color: Colors.red),
+                  SizedBox(
+                    height: 250,
+                    child: ListView.separated(
+                      separatorBuilder: (context, index) => SizedBox(width: 16),
+                      scrollDirection: Axis.horizontal,
+                      itemCount: 5,
+                      itemBuilder: (context, index) {
+                        return ReproductiveCard();
+                      },
                     ),
-                    child: Text("Most Popular Card list horizontal"),
                   ),
                 ],
               ),
             ),
-            Container(
+            SizedBox(
               width: double.maxFinite,
-              decoration: BoxDecoration(border: Border.all(width: 1)),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: 4,
+                spacing: 12,
                 children: [
                   Text(
                     "Top Picks",
                     style: TextStyle(
-                      fontSize: 20,
+                      fontSize: 24,
                       color: AppColors.textColor,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                  Container(
-                    height: 250,
-                    decoration: BoxDecoration(
-                      border: Border.all(width: 1, color: Colors.red),
-                    ),
-                    child: Text("Most Popular Card list horizontal"),
+                  ListView.separated(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    separatorBuilder: (context, index) => SizedBox(height: 16),
+                    scrollDirection: Axis.vertical,
+                    itemCount: 5,
+                    itemBuilder: (context, index) {
+                      return TopPickCard();
+                    },
                   ),
                 ],
               ),

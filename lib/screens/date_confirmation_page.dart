@@ -3,6 +3,7 @@ import 'package:baby_care/core/widgets/custom_button.dart';
 import 'package:baby_care/core/widgets/navigation_layout.dart';
 import 'package:baby_care/core/widgets/page_layout_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class DateConfirmationPage extends StatelessWidget {
   final String title;
@@ -41,7 +42,6 @@ class DateConfirmationPage extends StatelessWidget {
                       MaterialPageRoute(
                         builder: (builder) => NavigationLayout(),
                       ),
-
                       (Route<dynamic> route) => false,
                     );
                   },
@@ -93,7 +93,7 @@ class DateConfirmationPage extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              "October",
+                              DateFormat.MMMM().format(date),
                               style: TextStyle(
                                 height: 0,
                                 color: AppColors.textColor,

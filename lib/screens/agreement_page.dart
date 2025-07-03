@@ -1,7 +1,7 @@
 import 'package:baby_care/core/utils/app_color.dart';
 import 'package:baby_care/core/widgets/custom_button.dart';
 import 'package:baby_care/core/widgets/page_layout_widget.dart';
-import 'package:baby_care/features/auth/login_page.dart';
+import 'package:baby_care/features/auth/presentation/pages/login_page.dart';
 import 'package:flutter/material.dart';
 
 class AgreementPage extends StatefulWidget {
