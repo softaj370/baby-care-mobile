@@ -30,14 +30,19 @@ class _MainInfoPageState extends State<MainInfoPage> {
     if (selectedDate != null) {
       selectedDate = LocalStorageService.instance.getSelectedDate();
       int totalDays = DateTime.now().difference(selectedDate!).inDays;
-      weeks = totalDays ~/ 7;
-      days = totalDays % weeks;
+      if (totalDays < 7) {
+        weeks = 0;
+        days = totalDays;
+        remainingWeeks = (_dayForDelivery - totalDays) ~/ 7;
+        remainingDays = (_dayForDelivery - totalDays) % 7;
+      } else {
+        weeks = totalDays ~/ 7;
+        days = totalDays % weeks;
 
-
-      int totalRemainingDays = _dayForDelivery - totalDays;
-      remainingWeeks = totalRemainingDays ~/ 7;
-      remainingDays = totalRemainingDays % weeks;
-
+        int totalRemainingDays = _dayForDelivery - totalDays;
+        remainingWeeks = totalRemainingDays ~/ 7;
+        remainingDays = totalRemainingDays % weeks;
+      }
     }
   }
 
