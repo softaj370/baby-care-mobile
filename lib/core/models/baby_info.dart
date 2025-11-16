@@ -1,7 +1,6 @@
 enum BabyInfoType { mother, baby }
 
 class WeekInfoResModel {
-  // final Uint8List? photo;
   int weekStart;
   int weekEnd;
   String infoText;

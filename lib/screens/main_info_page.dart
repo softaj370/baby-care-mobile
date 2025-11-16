@@ -1,3 +1,5 @@
+import 'dart:typed_data' show Uint8List;
+
 import 'package:baby_care/core/models/baby_info.dart';
 import 'package:baby_care/core/services/info_service.dart';
 import 'package:baby_care/core/services/local_storage_service.dart';
@@ -5,6 +7,8 @@ import 'package:baby_care/core/utils/app_color.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
+import '../core/rest/baby_info_rest.dart';
 
 class MainInfoPage extends StatefulWidget {
   const MainInfoPage({super.key});
@@ -17,7 +21,7 @@ class _MainInfoPageState extends State<MainInfoPage> {
   late int weeks, remainingWeeks = 0;
   late int days, remainingDays = 0;
   DateTime? selectedDate = DateTime.now();
-
+  late Future<Uint8List?> _babyImageFuture;
   final List<bool> _isOpen = List.generate(2, (_) => true);
 
   final int _dayForDelivery = 280;
@@ -43,6 +47,7 @@ class _MainInfoPageState extends State<MainInfoPage> {
         remainingWeeks = totalRemainingDays ~/ 7;
         remainingDays = totalRemainingDays % weeks;
       }
+      _babyImageFuture = WeekInfoRest.instance.fetchWeekImageInfo(weeks > 0 ? weeks : 1);
     }
 
     // Fetch week info based on current week
@@ -72,9 +77,38 @@ class _MainInfoPageState extends State<MainInfoPage> {
           SizedBox(
             child: AspectRatio(
               aspectRatio: 0.8,
-              child: Image.asset(
-                'assets/images/small-baby.png',
-                fit: BoxFit.cover,
+              child:  FutureBuilder<Uint8List?>(
+                future: _babyImageFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return SizedBox(
+                      height: 150,
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          color: AppColors.primaryColor,
+                        ),
+                      ),
+                    );
+                  }
+
+                  // Display base64 image if available, otherwise show default
+                  if (snapshot.hasData && snapshot.data != null) {
+                    try {
+                      final Uint8List imageBytes = snapshot.data! ;
+                      return Image.memory(
+                        imageBytes,
+                        height: 150,
+                        fit: BoxFit.contain,
+                      );
+                    } catch (e) {
+                      // If casting fails, show default image
+                      return Image.asset("assets/images/baby.png", height: 150);
+                    }
+                  }
+
+                  // Default image
+                  return Image.asset("assets/images/baby.png", height: 150);
+                },
               ),
             ),
           ),

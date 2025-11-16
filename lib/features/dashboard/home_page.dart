@@ -1,3 +1,6 @@
+import 'dart:typed_data';
+
+import 'package:baby_care/core/rest/baby_info_rest.dart';
 import 'package:baby_care/core/services/local_storage_service.dart';
 import 'package:baby_care/core/utils/app_color.dart';
 import 'package:baby_care/core/widgets/daily_info_card.dart';
@@ -5,6 +8,8 @@ import 'package:baby_care/screens/main_info_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
+import '../../core/services/info_service.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -18,6 +23,7 @@ class _HomePageState extends State<HomePage> {
   late int days = 0;
   DateTime? selectedDate = LocalStorageService.instance.getSelectedDate();
   late List<Map<String, dynamic>> horDateList = getDateListWithPrefix();
+  late Future<Uint8List?> _babyImageFuture;
 
   @override
   void initState() {
@@ -26,6 +32,9 @@ class _HomePageState extends State<HomePage> {
       weeks = (DateTime.now().difference(selectedDate!).inDays / 7).floor();
       days = DateTime.now().difference(selectedDate!).inDays;
     }
+
+    // Fetch baby image for current week
+    _babyImageFuture = InfoService.instance.getBabyImageInfoStream(weeks > 0 ? weeks : 1);
   }
 
   List<Map<String, dynamic>> getDateListWithPrefix() {
@@ -87,7 +96,39 @@ class _HomePageState extends State<HomePage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       spacing: 16,
                       children: [
-                        Image.asset("assets/images/baby.png"),
+                        FutureBuilder<Uint8List?>(
+                          future: _babyImageFuture,
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return SizedBox(
+                                height: 150,
+                                child: Center(
+                                  child: CircularProgressIndicator(
+                                    color: AppColors.primaryColor,
+                                  ),
+                                ),
+                              );
+                            }
+
+                            // Display base64 image if available, otherwise show default
+                            if (snapshot.hasData && snapshot.data != null) {
+                              try {
+                                final Uint8List imageBytes = snapshot.data! ;
+                                return Image.memory(
+                                  imageBytes,
+                                  height: 150,
+                                  fit: BoxFit.contain,
+                                );
+                              } catch (e) {
+                                // If casting fails, show default image
+                                return Image.asset("assets/images/baby.png", height: 150);
+                              }
+                            }
+
+                            // Default image
+                            return Image.asset("assets/images/baby.png", height: 150);
+                          },
+                        ),
                         Column(
                           children: [
                             Row(
