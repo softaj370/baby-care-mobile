@@ -98,16 +98,16 @@ class _MainInfoPageState extends State<MainInfoPage> {
                       return Image.memory(
                         imageBytes,
                         height: 150,
-                        fit: BoxFit.contain,
+                        fit: BoxFit.cover,
                       );
                     } catch (e) {
                       // If casting fails, show default image
-                      return Image.asset("assets/images/baby.png", height: 150);
+                      return Image.asset("assets/images/small-baby.png", fit: BoxFit.cover);
                     }
                   }
 
                   // Default image
-                  return Image.asset("assets/images/baby.png", height: 150);
+                  return Image.asset("assets/images/small-baby.png",fit: BoxFit.cover);
                 },
               ),
             ),
