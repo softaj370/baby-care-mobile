@@ -1,3 +1,5 @@
+import 'package:baby_care/core/models/baby_info.dart';
+import 'package:baby_care/core/services/info_service.dart';
 import 'package:baby_care/core/services/local_storage_service.dart';
 import 'package:baby_care/core/utils/app_color.dart';
 import 'package:flutter/cupertino.dart';
@@ -18,14 +20,12 @@ class _MainInfoPageState extends State<MainInfoPage> {
 
   final List<bool> _isOpen = List.generate(2, (_) => true);
 
-  final String _details =
-      "In week 8 the embryo looks more and more like a human, instead of an alien. The head is about half of the entire body length. The little face continues to";
-
   final int _dayForDelivery = 280;
+
+  late Future<WeekInfoModel> _weekInfoFuture;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     if (selectedDate != null) {
       selectedDate = LocalStorageService.instance.getSelectedDate();
@@ -44,6 +44,9 @@ class _MainInfoPageState extends State<MainInfoPage> {
         remainingDays = totalRemainingDays % weeks;
       }
     }
+
+    // Fetch week info based on current week
+    _weekInfoFuture = InfoService.instance.getBabyInfoStream(weeks > 0 ? weeks : 1);
   }
 
   @override
@@ -145,69 +148,103 @@ class _MainInfoPageState extends State<MainInfoPage> {
                       ],
                     ),
                   ),
-                  ExpansionPanelList(
-                    materialGapSize: 0,
-                    expansionCallback: (index, isOpen) {
-                      setState(() {
-                        _isOpen[index] = !_isOpen[index];
-                      });
+                  FutureBuilder<WeekInfoModel>(
+                    future: _weekInfoFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Container(
+                          padding: EdgeInsets.all(32),
+                          color: Colors.white,
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              color: AppColors.cardBlue,
+                            ),
+                          ),
+                        );
+                      }
+
+                      if (snapshot.hasError) {
+                        return Container(
+                          padding: EdgeInsets.all(32),
+                          color: Colors.white,
+                          child: Center(
+                            child: Text(
+                              'Error loading information',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ),
+                        );
+                      }
+
+                      final weekInfo = snapshot.data;
+                      final babyInfo = weekInfo?.babyInfo ?? 'No information available';
+                      final motherInfo = weekInfo?.motherInfo ?? 'No information available';
+
+                      return ExpansionPanelList(
+                        materialGapSize: 0,
+                        expansionCallback: (index, isOpen) {
+                          setState(() {
+                            _isOpen[index] = !_isOpen[index];
+                          });
+                        },
+                        elevation: 0,
+                        animationDuration: Duration(milliseconds: 200),
+                        expandedHeaderPadding: EdgeInsets.all(0),
+                        expandIconColor: Colors.white,
+                        children: [
+                          ExpansionPanel(
+                            canTapOnHeader: true,
+                            isExpanded: _isOpen[0],
+                            backgroundColor: AppColors.darkRed,
+                            headerBuilder: (context, isOpen) {
+                              return Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Text(
+                                  "Baby",
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              );
+                            },
+                            body: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Text(
+                                babyInfo,
+                                style: TextStyle(fontSize: 16, color: Colors.white),
+                              ),
+                            ),
+                          ),
+                          ExpansionPanel(
+                            canTapOnHeader: true,
+                            isExpanded: _isOpen[1],
+                            backgroundColor: AppColors.lightOrange,
+                            headerBuilder: (context, isOpen) {
+                              return Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Text(
+                                  "Mother",
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              );
+                            },
+                            body: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Text(
+                                motherInfo,
+                                style: TextStyle(fontSize: 16, color: Colors.white),
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
                     },
-                    elevation: 0,
-                    animationDuration: Duration(milliseconds: 200),
-                    expandedHeaderPadding: EdgeInsets.all(0),
-                    expandIconColor: Colors.white,
-                    children: [
-                      ExpansionPanel(
-                        canTapOnHeader: true,
-                        isExpanded: _isOpen[0],
-                        backgroundColor: AppColors.darkRed,
-                        headerBuilder: (context, isOpen) {
-                          return Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: Text(
-                              "Baby",
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.white,
-                              ),
-                            ),
-                          );
-                        },
-                        body: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Text(
-                            _details,
-                            style: TextStyle(fontSize: 16, color: Colors.white),
-                          ),
-                        ),
-                      ),
-                      ExpansionPanel(
-                        canTapOnHeader: true,
-                        isExpanded: _isOpen[1],
-                        backgroundColor: AppColors.lightOrange,
-                        headerBuilder: (context, isOpen) {
-                          return Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: Text(
-                              "Mother",
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.white,
-                              ),
-                            ),
-                          );
-                        },
-                        body: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Text(
-                            _details,
-                            style: TextStyle(fontSize: 16, color: Colors.white),
-                          ),
-                        ),
-                      ),
-                    ],
                   ),
                 ],
               ),
