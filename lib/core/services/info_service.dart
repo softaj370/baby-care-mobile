@@ -8,7 +8,7 @@ class InfoService {
   static InfoService get instance => _instance;
 
     Future<WeekInfoModel> getBabyInfoStream(int week) async {
-        final babyInfoList = await WeekInfoRest.instance.fetchWeekInfo(4);
+        final babyInfoList = await WeekInfoRest.instance.fetchWeekInfo(week);
         final weekInfoModel = WeekInfoModel(
         );
         if (babyInfoList != null) {
