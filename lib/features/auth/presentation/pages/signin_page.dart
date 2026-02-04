@@ -60,7 +60,7 @@ class _SignInPageState extends State<SignInPage> {
           "params": {"db": "odoo", "login": email, "password": password},
         },
       );
-      String? date;
+      dynamic date;
       if (response.data.containsKey('result') &&
           response.data['result'] != null) {
         date = response.data['result']['partner']["expected_baby"];
