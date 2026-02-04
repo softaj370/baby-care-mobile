@@ -1,4 +1,5 @@
 import 'package:baby_care/core/constants/app_constance.dart';
+import 'package:baby_care/core/services/local_storage_service.dart';
 import 'package:baby_care/core/services/session_storage_service.dart';
 import 'package:baby_care/core/utils/app_color.dart';
 import 'package:baby_care/core/widgets/custom_button.dart';
@@ -80,6 +81,12 @@ class _SignInPageState extends State<SignInPage> {
         }
 
         babyExpectDate = date is String ? date : null;
+        if (babyExpectDate != null) {
+          final expectedDate = DateTime.tryParse(babyExpectDate!);
+          if (expectedDate != null) {
+            await LocalStorageService.instance.saveSelectedDate(expectedDate);
+          }
+        }
 
         // navigate to logged in page
         if (!mounted) return;
