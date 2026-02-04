@@ -1,3 +1,4 @@
+import 'package:baby_care/core/constants/app_constance.dart';
 import 'package:baby_care/core/services/session_storage_service.dart';
 import 'package:baby_care/screens/date_picker_page.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +13,7 @@ class OdooLoginPage extends StatefulWidget {
 
 class _OdooLoginPageState extends State<OdooLoginPage> {
   late InAppWebViewController webViewController;
-  final String odooLoginUrl = 'https://baby.qbitzone.com/web/login';
+  final String odooLoginUrl = '${AppConstants.apiBaseUrl}/web/login';
 
   Future<void> _onLoginComplete(String? title) async{
     CookieManager cookieManager = CookieManager.instance();
@@ -20,8 +21,10 @@ class _OdooLoginPageState extends State<OdooLoginPage> {
       url: WebUri(odooLoginUrl),
     );
 
+    print(cookies);
+
     for (var cookie in cookies) {
-      if (title?.toLowerCase() == "inbox" &&
+      if (title?.toLowerCase() == "discuss" &&
           cookie.name == 'session_id') {
         SessionStorageService.instance.saveSession(cookie.value);
       }
@@ -43,7 +46,11 @@ class _OdooLoginPageState extends State<OdooLoginPage> {
         onWebViewCreated: (controller) async {
           webViewController = controller;
         },
+        onProgressChanged: (controller, value) {
+          print('${value} here');
+        },
         onTitleChanged: (webViewController, title) async {
+          print(title);
           _onLoginComplete(title);
         },
       ),

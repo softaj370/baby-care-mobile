@@ -1,3 +1,5 @@
+import 'package:baby_care/core/constants/app_constance.dart';
+import 'package:baby_care/core/widgets/custom_webview.dart';
 import 'package:flutter/material.dart';
 
 class AnalyticPage extends StatefulWidget {
@@ -8,17 +10,12 @@ class AnalyticPage extends StatefulWidget {
 }
 
 class _AnalyticPageState extends State<AnalyticPage> {
+  final String analyticPageUrl = '${AppConstants.feBaseUrl}/analytics/analytics-cycle';
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: 16),
-        child: Column(
-          spacing: 16,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [Text("Health Insight Page")],
-        ),
-      ),
+        child: CustomWebView(url: analyticPageUrl)
     );
   }
 }

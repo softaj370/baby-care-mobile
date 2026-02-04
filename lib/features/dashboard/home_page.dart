@@ -1,9 +1,12 @@
 import 'dart:typed_data';
 
+import 'package:baby_care/core/constants/app_constance.dart';
 import 'package:baby_care/core/rest/baby_info_rest.dart';
 import 'package:baby_care/core/services/local_storage_service.dart';
 import 'package:baby_care/core/utils/app_color.dart';
+import 'package:baby_care/core/widgets/custom_webview.dart';
 import 'package:baby_care/core/widgets/daily_info_card.dart';
+import 'package:baby_care/features/dashboard/vital_tracker.dart';
 import 'package:baby_care/screens/main_info_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -29,12 +32,15 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     if (selectedDate != null) {
-      weeks = (DateTime.now().difference(selectedDate!).inDays / 7).floor();
-      days = DateTime.now().difference(selectedDate!).inDays;
+      final totalDays = DateTime.now().difference(selectedDate!).inDays;
+      weeks = totalDays ~/ 7;
+      days =  totalDays % 7;
     }
 
     // Fetch baby image for current week
-    _babyImageFuture = InfoService.instance.getBabyImageInfoStream(weeks > 0 ? weeks : 1);
+    _babyImageFuture = InfoService.instance.getBabyImageInfoStream(
+      weeks > 0 ? weeks : 1,
+    );
   }
 
   List<Map<String, dynamic>> getDateListWithPrefix() {
@@ -99,7 +105,8 @@ class _HomePageState extends State<HomePage> {
                         FutureBuilder<Uint8List?>(
                           future: _babyImageFuture,
                           builder: (context, snapshot) {
-                            if (snapshot.connectionState == ConnectionState.waiting) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
                               return SizedBox(
                                 height: 150,
                                 child: Center(
@@ -113,20 +120,37 @@ class _HomePageState extends State<HomePage> {
                             // Display base64 image if available, otherwise show default
                             if (snapshot.hasData && snapshot.data != null) {
                               try {
-                                final Uint8List imageBytes = snapshot.data! ;
-                                return Image.memory(
-                                  imageBytes,
-                                  height: 150,
-                                  fit: BoxFit.contain,
+                                final Uint8List imageBytes = snapshot.data!;
+                                return Container(
+                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(400)),
+                                  child: SizedBox(
+                                    height: 150,
+                                    child: AspectRatio(
+                                      aspectRatio: 1,
+                                      child: ClipOval(
+                                        child: Image.memory(
+                                          imageBytes,
+                                          height: 150,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                                 );
                               } catch (e) {
                                 // If casting fails, show default image
-                                return Image.asset("assets/images/baby.png", height: 150);
+                                return Image.asset(
+                                  "assets/images/baby.png",
+                                  height: 150,
+                                );
                               }
                             }
 
                             // Default image
-                            return Image.asset("assets/images/baby.png", height: 150);
+                            return Image.asset(
+                              "assets/images/baby.png",
+                              height: 150,
+                            );
                           },
                         ),
                         Column(
@@ -187,7 +211,12 @@ class _HomePageState extends State<HomePage> {
             ),
             InkWell(
               borderRadius: BorderRadius.circular(100),
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (builder) => VitalTrackerPage()),
+                );
+              },
               child: Image.asset(
                 "assets/images/add-button-shadow.png",
                 height: 68,

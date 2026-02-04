@@ -5,6 +5,7 @@ import 'package:baby_care/core/services/local_storage_service.dart';
 import 'package:baby_care/core/services/session_storage_service.dart';
 import 'package:baby_care/core/utils/app_color.dart';
 import 'package:baby_care/core/widgets/navigation_layout.dart';
+import 'package:baby_care/features/auth/presentation/pages/signin_page.dart';
 import 'package:baby_care/screens/date_picker_page.dart';
 import 'package:baby_care/web_login.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +31,7 @@ class _SplashScreenState extends State<SplashScreen> {
       Timer.periodic(const Duration(seconds: 1), (timer) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const OdooLoginPage()),
+          MaterialPageRoute(builder: (context) => SignInPage()),
         );
       });
     } else {

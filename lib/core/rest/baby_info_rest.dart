@@ -56,9 +56,9 @@ class WeekInfoRest {
     int week,
     List<String> fields,
   ) async {
-    final dio = Dio(BaseOptions(baseUrl: AppConstance.apiBaseUrl));
+    final dio = Dio(BaseOptions(baseUrl: AppConstants.apiBaseUrl));
     final response = await dio.post(
-      AppConstance.callKw,
+      AppConstants.callKw,
       data: {
         "jsonrpc": "2.0",
         "method": "call",

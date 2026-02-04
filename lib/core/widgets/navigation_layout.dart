@@ -4,6 +4,7 @@ import 'package:baby_care/features/dashboard/analytic_page.dart';
 import 'package:baby_care/features/dashboard/home_page.dart';
 import 'package:baby_care/features/dashboard/insight_page.dart';
 import 'package:baby_care/features/dashboard/profile_page.dart';
+import 'package:baby_care/features/shop/shop_app.dart';
 import 'package:baby_care/features/shop/shop_home_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -72,9 +73,21 @@ class _NavigationLayoutState extends State<NavigationLayout> {
               ),
               InkWell(
                 onTap: () {
-                  setState(() {
-                    currentIndex = 1;
-                  });
+                  if (currentIndex == 1) {
+                    // refresh by replacing the page instance with a new one
+                    setState(() {
+                      navbarItemList[1] = NavbarItem(
+                        page: InsightPage(key: UniqueKey()),
+                        icon: navbarItemList[1].icon,
+                        pageName: navbarItemList[1].pageName,
+                        label: navbarItemList[1].label,
+                      );
+                    });
+                  } else {
+                    setState(() {
+                      currentIndex = 1;
+                    });
+                  }
                 },
                 child: navbarItem(navbarItemList[1].icon, currentIndex == 1),
               ),
@@ -103,7 +116,7 @@ class _NavigationLayoutState extends State<NavigationLayout> {
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (item) => ShopHomePage()),
+            MaterialPageRoute(builder: (item) => ShopAppPage()),
           );
         },
         child: PhysicalModel(
