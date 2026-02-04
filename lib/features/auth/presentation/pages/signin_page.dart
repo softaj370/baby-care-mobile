@@ -1,18 +1,17 @@
 import 'package:baby_care/core/constants/app_constance.dart';
-import 'package:baby_care/core/services/local_storage_service.dart';
 import 'package:baby_care/core/services/session_storage_service.dart';
 import 'package:baby_care/core/utils/app_color.dart';
 import 'package:baby_care/core/widgets/custom_button.dart';
 import 'package:baby_care/core/widgets/navigation_layout.dart';
 import 'package:baby_care/core/widgets/page_layout_widget.dart';
 import 'package:baby_care/features/auth/presentation/pages/logged_in_page.dart';
+import 'package:baby_care/features/auth/presentation/pages/signup_page.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter/material.dart';
 
 class SignInPage extends StatefulWidget {
-
   const SignInPage({super.key});
 
   @override
@@ -20,7 +19,8 @@ class SignInPage extends StatefulWidget {
 }
 
 class _SignInPageState extends State<SignInPage> {
-  final String signInApi = '${AppConstants.apiBaseUrl}/web/session/authenticate';
+  final String signInApi =
+      '${AppConstants.apiBaseUrl}/web/session/authenticate';
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _loading = false;
@@ -29,7 +29,9 @@ class _SignInPageState extends State<SignInPage> {
 
   Future<void> _showMessage(String message) async {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   Future<void> _signIn() async {
@@ -52,38 +54,33 @@ class _SignInPageState extends State<SignInPage> {
     try {
       final response = await dio.post(
         signInApi,
-          data: {
-            "jsonrpc": "2.0",
-            "method": "call",
-            "params": {
-              "db": "odoo",
-              "login": email,
-              "password": password
-            },
-          }
+        data: {
+          "jsonrpc": "2.0",
+          "method": "call",
+          "params": {"db": "odoo", "login": email, "password": password},
+        },
       );
 
-      if (response.data.containsKey('result') && response.data['result'] != null) {
+      if (response.data.containsKey('result') &&
+          response.data['result'] != null) {
         // try to read cookies for the login URL and find a session cookie
 
-
-          final uri = Uri.parse(signInApi);
-          final cookies = await cookieJar.loadForRequest(uri);
-          String? sessionValue;
-          for (final c in cookies) {
-            final name = c.name.toLowerCase();
-            if (name.contains('session_id')) {
-              sessionValue = c.value;
-              break;
-            }
+        final uri = Uri.parse(signInApi);
+        final cookies = await cookieJar.loadForRequest(uri);
+        String? sessionValue;
+        for (final c in cookies) {
+          final name = c.name.toLowerCase();
+          if (name.contains('session_id')) {
+            sessionValue = c.value;
+            break;
           }
+        }
 
-          if (sessionValue != null) {
-            await SessionStorageService.instance.saveSession(sessionValue);
-          }
+        if (sessionValue != null) {
+          await SessionStorageService.instance.saveSession(sessionValue);
+        }
 
-
-          final dioo = Dio(BaseOptions(baseUrl: AppConstants.apiBaseUrl));
+        final dioo = Dio(BaseOptions(baseUrl: AppConstants.apiBaseUrl));
         final partnerResponse = await dioo.post(
           AppConstants.callKw,
           data: {
@@ -92,47 +89,44 @@ class _SignInPageState extends State<SignInPage> {
             "params": {
               "model": "res.partner",
               "method": "search_read",
-              "args": [[["id", "=", 3]]],
-              "kwargs": {
-                "limit": 10
-              }
-            }
+              "args": [
+                [
+                  ["id", "=", 3],
+                ],
+              ],
+              "kwargs": {"limit": 10},
+            },
           },
           options: Options(
             headers: {
               'Content-Type': 'application/json',
-              "Cookie": "session_id=${SessionStorageService.instance.getSession()}",
+              "Cookie":
+                  "session_id=${SessionStorageService.instance.getSession()}",
             },
           ),
         );
         final date = partnerResponse.data['result'][0]["expected_baby"];
-          babyExpectDate = date is String ? date : null;
+        babyExpectDate = date is String ? date : null;
 
-
-          // navigate to logged in page
-          if (!mounted) return;
-          print(SessionStorageService.instance.getSession());
-          if (babyExpectDate == null) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (_) => const LoggedInPage()
-
-              ),
-            );
-          }else{
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (_) => const NavigationLayout()
-              ),
-            );
-          }
+        // navigate to logged in page
+        if (!mounted) return;
+        print(SessionStorageService.instance.getSession());
+        if (babyExpectDate == null) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => const LoggedInPage()),
+          );
         } else {
-          String msg = 'Login failed';
-          await _showMessage(msg);
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => const NavigationLayout()),
+          );
         }
-
-    }
-    catch (e) {
+      } else {
+        String msg = 'Login failed';
+        await _showMessage(msg);
+      }
+    } catch (e) {
       await _showMessage('Login error: ${e.toString()}');
       print(e.toString());
     } finally {
@@ -169,6 +163,21 @@ class _SignInPageState extends State<SignInPage> {
                     bgColor: Colors.white,
                     textColor: AppColors.primaryColor,
                   ),
+                  CustomButton(
+                    text: 'Sign up',
+                    onPressed: _loading
+                        ? () {}
+                        : () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const SignUpPage(),
+                              ),
+                            );
+                          },
+                    bgColor: Colors.white,
+                    textColor: AppColors.primaryColor,
+                  ),
                   SizedBox(height: 8),
                 ],
               ),
@@ -194,7 +203,7 @@ class _SignInPageState extends State<SignInPage> {
                       labelText: 'Email',
                       hintText: 'your@example.com',
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12) ,
+                        borderRadius: BorderRadius.circular(12),
                       ),
                     ),
                   ),
@@ -207,27 +216,25 @@ class _SignInPageState extends State<SignInPage> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       suffixIcon: IconButton(
-                        icon: Icon(_obscure ? Icons.visibility_off : Icons.visibility),
+                        icon: Icon(
+                          _obscure ? Icons.visibility_off : Icons.visibility,
+                        ),
                         onPressed: () => setState(() => _obscure = !_obscure),
                       ),
                     ),
                   ),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       TextButton(
                         onPressed: () {
                           // forgot flow placeholder
                           _showMessage('Forgot password flow not implemented');
                         },
-                        child: Text('Forgot password?', style: TextStyle(color: AppColors.primaryColor)),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          // placeholder for create account
-                          _showMessage('Create account flow not implemented');
-                        },
-                        child: Text('Create account', style: TextStyle(color: AppColors.primaryColor)),
+                        child: Text(
+                          'Forgot password?',
+                          style: TextStyle(color: AppColors.primaryColor),
+                        ),
                       ),
                     ],
                   ),
