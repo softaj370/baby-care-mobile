@@ -60,11 +60,10 @@ class _SignInPageState extends State<SignInPage> {
           "params": {"db": "odoo", "login": email, "password": password},
         },
       );
-
+      String? date;
       if (response.data.containsKey('result') &&
           response.data['result'] != null) {
-        // try to read cookies for the login URL and find a session cookie
-
+        date = response.data['result']['partner']["expected_baby"];
         final uri = Uri.parse(signInApi);
         final cookies = await cookieJar.loadForRequest(uri);
         String? sessionValue;
@@ -80,32 +79,6 @@ class _SignInPageState extends State<SignInPage> {
           await SessionStorageService.instance.saveSession(sessionValue);
         }
 
-        final dioo = Dio(BaseOptions(baseUrl: AppConstants.apiBaseUrl));
-        final partnerResponse = await dioo.post(
-          AppConstants.callKw,
-          data: {
-            "jsonrpc": "2.0",
-            "method": "call",
-            "params": {
-              "model": "res.partner",
-              "method": "search_read",
-              "args": [
-                [
-                  ["id", "=", 3],
-                ],
-              ],
-              "kwargs": {"limit": 10},
-            },
-          },
-          options: Options(
-            headers: {
-              'Content-Type': 'application/json',
-              "Cookie":
-                  "session_id=${SessionStorageService.instance.getSession()}",
-            },
-          ),
-        );
-        final date = partnerResponse.data['result'][0]["expected_baby"];
         babyExpectDate = date is String ? date : null;
 
         // navigate to logged in page
