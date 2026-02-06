@@ -21,6 +21,7 @@ class _ProfilePageState extends State<ProfilePage> {
   late int weeks = 0;
 
   DateTime? selectedDate = LocalStorageService.instance.getSelectedDate();
+  String userName = LocalStorageService.instance.getUserFullName();
   late Future<Uint8List?> _babyImageFuture;
 
   @override
@@ -115,7 +116,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                         ),
                         Text(
-                          "Full Name",
+                          userName,
                           style: TextStyle(
                             fontSize: 20,
                             color: AppColors.primaryColor,

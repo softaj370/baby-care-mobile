@@ -1,4 +1,5 @@
 import 'package:baby_care/core/constants/app_constance.dart';
+import 'package:baby_care/core/services/local_storage_service.dart';
 import 'package:baby_care/core/services/session_storage_service.dart';
 import 'package:baby_care/core/utils/app_color.dart';
 import 'package:baby_care/core/widgets/custom_button.dart';
@@ -64,6 +65,10 @@ class _SignInPageState extends State<SignInPage> {
       if (response.data.containsKey('result') &&
           response.data['result'] != null) {
         date = response.data['result']['partner']["expected_baby"];
+        String userName = response.data['result']["name"];
+
+        LocalStorageService.instance.saveUserFullName(userName);
+
         final uri = Uri.parse(signInApi);
         final cookies = await cookieJar.loadForRequest(uri);
         String? sessionValue;

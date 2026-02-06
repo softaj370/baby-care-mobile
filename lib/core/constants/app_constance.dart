@@ -8,4 +8,9 @@ class AppConstants {
 
   static const String emailSignupRequestPath = "/api/auth/email/request";
   static const String emailSignupBasicAuth = "Basic YWpAbWFpbC5jb206YWpheQ==";
+
+
+  static const String userFullName = "userFullName";
+
+
 }
