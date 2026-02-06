@@ -85,6 +85,12 @@ class _SignInPageState extends State<SignInPage> {
         }
 
         babyExpectDate = date is String ? date : null;
+        if (babyExpectDate != null) {
+          final expectedDate = DateTime.tryParse(babyExpectDate!);
+          if (expectedDate != null) {
+            await LocalStorageService.instance.saveSelectedDate(expectedDate);
+          }
+        }
 
         // navigate to logged in page
         if (!mounted) return;
